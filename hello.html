@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>My first Vue app</title>
+  <script src="https://unpkg.com/vue"></script>
+  <style>
+    .viewer{
+      width: 8cm;
+      height: 8cm;
+      margin: 0;
+      outline: 1px solid black;
+      background-color: transparent;
+    }
+  </style>
+</head>
+<body>
+  <script src="./lib/reglRenderer.js"></script>
+  <script src="./viewerComponent.js"></script>
+  <script src="./solids.js"></script>
+
+  <div id="app">
+    <div>
+      <p>{{ message }}</p>
+    <button v-on:click="reverse">Reverse Message</button>
+    </div>
+    <div>
+      <jscad-viewer></jscad-viewer>
+    </div>
+  </div>
+
+<script>
+// global registration of viewer component
+Vue.component(viewerComponent.name, viewerComponent.properties)
+
+const something = [1,2,3,4]
+
+var app = new Vue({
+  el: '#app',
+  data: {
+    message: 'Hello Vue!'
+  },
+  methods: {
+    reverse: function () {
+      this.message = this.message.split('').reverse().join('')
+    }
+  }
+})
+</script>
+
+</body>
+</html>
