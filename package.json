@@ -5,7 +5,7 @@
   "repository": "https://github.com/jscad/OpenJSCAD.org/",
   "main": "src/index.js",
   "scripts": {
-    "build": "browserify src/viewerComponent.js -p tinyify -o lib/viewerComponent.js --standalone viewerComponent",
+    "build": "browserify src/viewerComponent.js -p tinyify -o dist/viewerComponent.js --standalone viewerComponent",
     "coverage": "nyc --all --reporter=html --reporter=text npm test",
     "test": "ava --verbose --timeout 2m 'tests/**/*.test.js'"
   },

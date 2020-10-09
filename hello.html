@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>My first Vue app</title>
+  <title>Simple Viewer for JSCAD Solids</title>
   <script src="https://unpkg.com/vue"></script>
   <style>
     .viewer{
@@ -14,14 +14,10 @@
   </style>
 </head>
 <body>
-  <script src="./lib/viewerComponent.js"></script>
+  <script src="./dist/viewerComponent.js"></script>
   <script src="./solids.js"></script>
 
   <div id="app">
-    <div>
-      <p>{{ message }}</p>
-    <button v-on:click="reverse">Reverse Message</button>
-    </div>
     <div>
       <jscad-viewer></jscad-viewer>
     </div>
@@ -31,18 +27,9 @@
 // global registration of viewer component
 Vue.component(viewerComponent.name, viewerComponent.properties)
 
-const something = [1,2,3,4]
-
-var app = new Vue({
+// initiate the Vue based application, which includes the jscad-viewer
+let app = new Vue({
   el: '#app',
-  data: {
-    message: 'Hello Vue!'
-  },
-  methods: {
-    reverse: function () {
-      this.message = this.message.split('').reverse().join('')
-    }
-  }
 })
 </script>
 
