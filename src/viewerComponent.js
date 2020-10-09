@@ -1,4 +1,4 @@
-const { prepareRender, drawCommands, cameras, controls, entitiesFromSolids } = reglRenderer
+const { prepareRender, drawCommands, cameras, controls, entitiesFromSolids } = require('@jscad/regl-renderer')
 
 const perspectiveCamera = cameras.perspective
 const orbitControls = controls.orbit
@@ -102,7 +102,7 @@ const setupRenderer = (containerElement, data) => {
   return renderer
 }
 
-var viewerComponent = {
+const viewerComponent = {
   name: 'jscad-viewer',
   properties: {
     props: [ 'solids', 'likes' ],
@@ -197,3 +197,5 @@ console.log(this.likes)
     template: '<div class="viewer" v-on:mousemove="onMouseMove" v-on:mousedown="onMouseDown" v-on:mouseup="onMouseUp" v-on:wheel="onScroll"></div>'
   }
 }
+
+module.exports = viewerComponent
