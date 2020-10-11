@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>My first Vue app</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+  <title>Simple Viewer for JSCAD Solids</title>
   <script src="https://unpkg.com/vue"></script>
+  <script src="https://unpkg.com/vuex"></script>
   <style>
     .viewer{
       width: 8cm;
@@ -14,15 +16,10 @@
   </style>
 </head>
 <body>
-  <script src="./lib/reglRenderer.js"></script>
-  <script src="./viewerComponent.js"></script>
+  <script src="./dist/viewerComponent.js"></script>
   <script src="./solids.js"></script>
 
   <div id="app">
-    <div>
-      <p>{{ message }}</p>
-    <button v-on:click="reverse">Reverse Message</button>
-    </div>
     <div>
       <jscad-viewer></jscad-viewer>
     </div>
@@ -32,19 +29,37 @@
 // global registration of viewer component
 Vue.component(viewerComponent.name, viewerComponent.properties)
 
-const something = [1,2,3,4]
-
-var app = new Vue({
-  el: '#app',
-  data: {
-    message: 'Hello Vue!'
+// global store with minimum state for viewer component
+const store = new Vuex.Store({
+  state: {
+    count: 0,
+    solids: []
   },
-  methods: {
-    reverse: function () {
-      this.message = this.message.split('').reverse().join('')
+  getters: {
+    getSolids: (state) => {
+      return state.solids
+    }
+  },
+  mutations: {
+    // @param {State} state
+    // @param {Array} solids
+    setSolids (state, solids) {
+      Vue.set(state.solids, 0, solids[0])
+      // trigger callback to viewer component
+      state.count = solids.length
     }
   }
 })
+
+// initiate the Vue based application, which includes the jscad-viewer
+let app = new Vue({
+  el: '#app',
+  store
+})
+
+// set the solids, which updates the viewer as well
+store.commit("setSolids", solids)
+
 </script>
 
 </body>
