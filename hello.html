@@ -44,7 +44,9 @@ const store = new Vuex.Store({
     // @param {State} state
     // @param {Array} solids
     setSolids (state, solids) {
-      Vue.set(state.solids, 0, solids[0])
+      solids.forEach((solid, i) => {
+        Vue.set(state.solids, i, solid)
+      })
       // trigger callback to viewer component
       state.count = solids.length
     }
