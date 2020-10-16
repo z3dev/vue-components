@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+  <title>JSCAD Design - Part 0</title>
+  <script src="https://unpkg.com/vue"></script>
+  <script src="https://unpkg.com/vuex"></script>
+  <style>
+    .viewer{
+      width: 8cm;
+      height: 8cm;
+      margin: 0;
+      outline: 1px solid black;
+      background-color: transparent;
+    }
+  </style>
+</head>
+<body>
+  <script src="./dist/viewerComponent.js"></script>
+  <script src="./jscad-modeling.min.js" ID="JSCAD LIBRARY"></script>
+  <script src="./design0.js" ID="DESIGN"></script>
+
+  <div id="app">
+    <div>
+      <jscad-viewer></jscad-viewer>
+    </div>
+    <div>
+      <p>Geometries: {{ count }}</p> 
+    </div>
+  </div>
+
+<script>
+/**
+ * This is Part 0 of working with JSCAD designs.
+ * Why Part 0 (not 1)? Because JSCAD designs can be quite complex.
+ * This is a very simple design, having only a SINGLE file (design0.js) which is NOT JSCAD compliant.
+ *
+ * In addition, this example loads the design when the page loads. See script DESIGN above.
+ * And therefore requires the JSCAD modeling library to be loaded. See script JSCAD LIBRARY above.
+ *
+ * Finally, the design is executed (YUP! The design is actually JavaScript!), which produces some solids.
+ * See EXECUTION below.
+ *
+ * This works but there are some issues.
+ * - only one file, no projects
+ * - non-JSCAD compliant design, see the contents of design0.js
+ * - solids are created immediately, while everything else waits
+ */
+
+// global registration of viewer component
+Vue.component(viewerComponent.name, viewerComponent.properties)
+
+// global store with minimum state for viewer component
+const store = new Vuex.Store({
+  state: {
+    count: 0,
+    solids: []
+  },
+  getters: {
+    getSolids: (state) => {
+      return state.solids
+    }
+  },
+  mutations: {
+    // @param {State} state
+    // @param {Array} solids
+    setSolids (state, solids) {
+      solids.forEach((solid, i) => {
+        Vue.set(state.solids, i, solid)
+      })
+      // trigger callback to viewer component
+      state.count = solids.length
+    }
+  }
+})
+
+// initiate the Vue based application, which includes the jscad-viewer
+let app = new Vue({
+  el: '#app',
+  store,
+  computed: {
+    count () {
+      return store.state.count
+    }
+  }
+})
+
+const solids = main() // EXECUTION
+
+// set the solids, which updates the viewer as well
+store.commit("setSolids", solids)
+
+</script>
+
+</body>
+</html>
