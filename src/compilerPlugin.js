@@ -1,4 +1,4 @@
-const { walkFileTree, rebuildGeometry } = require('@jscad/core')
+const { web, evaluation } = require('@jscad/core')
 
 const compilerPlugin = (store) => {
   // called when the store is initialized
@@ -29,11 +29,11 @@ console.log('afunc',paramsOrSolids)
     }
   }
 
-  walkFileTree(files)
+  web.walkFileTree(files)
   .then((filesAndFolders) => {
 console.log('filesAndFolders',filesAndFolders)
     const data = { filesAndFolders, serialize: false }
-    const objects = rebuildGeometry(data, afunc)
+    const objects = evaluation.rebuildGeometry(data, afunc)
     store.commit('setStatus','compiling...')
   })
   .then(() => {
