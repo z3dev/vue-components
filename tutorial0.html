@@ -18,7 +18,7 @@
 <body>
   <script src="./dist/viewerComponent.js"></script>
   <script src="./jscad-modeling.min.js" ID="JSCAD LIBRARY"></script>
-  <script src="./design0.js" ID="DESIGN"></script>
+  <script src="./tutorial0.js" ID="DESIGN"></script>
 
   <div id="app">
     <div>
@@ -33,18 +33,20 @@
 /**
  * This is Part 0 of working with JSCAD designs.
  * Why Part 0 (not 1)? Because JSCAD designs can be quite complex.
- * This is a very simple design, having only a SINGLE file (design0.js) which is NOT JSCAD compliant.
+ * This is a very simple application, loading a JSCAD design from a static file (tutorial0.js),
+ * which by the way is NOT JSCAD compliant.
  *
- * In addition, this example loads the design when the page loads. See script DESIGN above.
- * And therefore requires the JSCAD modeling library to be loaded. See script JSCAD LIBRARY above.
+ * This tutorial loads the JSCAD design when the page loads. See script DESIGN above.
+ * And therefore requires the JSCAD modeling library to be loaded beforehand. See script JSCAD LIBRARY above.
+ * The sequence of scripts is VERY important.
  *
  * Finally, the design is executed (YUP! The design is actually JavaScript!), which produces some solids.
  * See EXECUTION below.
  *
  * This works but there are some issues.
- * - only one file, no projects
- * - non-JSCAD compliant design, see the contents of design0.js
- * - solids are created immediately, while everything else waits
+ * - This tutorial requires a single file which contains a single design. JSCAD projects are not possible.
+ * - This tutorial uses a non-JSCAD compliant design (See the notes inside tutorial0.js)
+ * - This tutorial has a very specific sequence of scripts.
  */
 
 // global registration of viewer component

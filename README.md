@@ -12,19 +12,21 @@ VUE Components for rendering and compiling JSCAD designs
 
 ## Usage
 
-See the various examples on how to assemble the components.
-Each example has comments about flows and usage, and should be self explanatory.
+See the various tutorials on how to assemble the components.
+Each tutorial has comments about flows and usage, and should be self explanatory.
 
 The next steps require [NPM](https://www.npmjs.com/) and [Node.js](https://nodejs.org).
 This project always develops with the latest LTS releases, so install those versions.
+
+Be sure to run these commands before running the tutorials.
 ```
 npm install
 npm run build
 ```
 
-### Examples
-- Hello - View a design
-- Design 0 - Load and view a JSCAD design (kind of)
+### Tutorials
+- Hello - View some JSCAD solids
+- Tutorial 0 - Load and view a JSCAD design (kind of) from a file
 
 ## License
 
