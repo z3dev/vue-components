@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
-  <title>JSCAD Design - Part 0</title>
+  <title>JSCAD Design - Tutorial 2</title>
   <script src="https://unpkg.com/vue"></script>
   <script src="https://unpkg.com/vuex"></script>
   <style>
@@ -24,34 +24,32 @@
     </div>
     <div>
       <p>Geometries: {{ count }}</p> 
-      <p>Status: <span style="color:blue">{{ status }}</span></p>
+      <p>Status: <span style="color:blue">{{ status }}</span></p> 
     </div>
     <div>
       <label for="selector">Select a JSCAD design:</label>
-      <input type="file" id="selector" @change="setFiles($event.target)" accept="application/javascript">
+      <input type="file" id="selector" @change="setFiles($event.target)" multiple webkitdirectory mozdirectory msdirectory odirectory directory></input>
     </div>
   </div>
 
 <script>
 /**
- * This is Part 1 of working with JSCAD designs.
- * This is another simple application, which allows the selection of a single (file) JSCAD design.
+ * This is Part 2 of working with JSCAD designs.
+ * This is another simple application, which allows the selection of a JSCAD project (directory).
  *
  * Notice that there is now only one script loaded, the Vue components library. See script LIBRARY above.
  *
- * The file is selected via a standard HTML input control.
- * Any change / new selection produces a list of files (1), and triggers the application function called setFiles().
+ * The directory is selected via a standard HTML input control. NOTICE the long list of special attributes; mulltiple, etc.
+ * Any change / new selection produces a list of files (1 or more), and triggers the application function called setFiles().
  *
- * Try selecting this file; examples/index.js
+ * Try selecting this directory; examples/
  * NOTE: This is a LARGE design so processing may stop. Please wait for the procesing to complete.
  *
- * Behind the scene, the selected file is passed to the store for compilation. See COMPILE below.
+ * Behind the scene, the selected directory (list of files) is passed to the store for compilation. See COMPILE below.
  * The VUE components include a compiler plugin (See src/compilerPlugin).
  * Once the compile is complete, the JSCAD solids are updated, and WA LA!
  *
  * This works but there are some issues.
- * - This tutorial only allows the selection of a single file, no projects
- * - This tutorial REQUIRES DESIGNS TO BE NAMED 'index.js'. UG
  * - This tutorial does not support JSCAD design parameters. Not very useful.
  * - The viewer STOPS while the compliation completes.
  */
