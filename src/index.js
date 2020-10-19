@@ -1,3 +1,4 @@
 module.exports = {
-  viewerComponent: require('./viewerComponent')
+  viewerComponent: require('./viewerComponent'),
+  compilerPlugin: require('./compilerPlugin')
 }
