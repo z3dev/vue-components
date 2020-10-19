@@ -12,6 +12,8 @@ const compilerPlugin = (store) => {
         files.push(fileList.item(i))
       }
 
+      store.commit('setStatus',`processing (${files.length})...`)
+
       compileDesign(store, files)
     }
   })
@@ -20,11 +22,10 @@ const compilerPlugin = (store) => {
 const compileDesign = (store, files) => {
   console.log('compileDesign',files)
 
-  store.commit('setStatus',`processing (${files.length})...`)
-
   const afunc = (crap, paramsOrSolids) => {
 console.log('afunc',paramsOrSolids)
     if (paramsOrSolids.type === 'solids') {
+      store.commit('setStatus','solids...')
       store.commit('setSolids', paramsOrSolids.solids)
     }
   }
@@ -32,9 +33,10 @@ console.log('afunc',paramsOrSolids)
   web.walkFileTree(files)
   .then((filesAndFolders) => {
 console.log('filesAndFolders',filesAndFolders)
+    store.commit('setStatus','compiling...')
+
     const data = { filesAndFolders, serialize: false }
     const objects = evaluation.rebuildGeometry(data, afunc)
-    store.commit('setStatus','compiling...')
   })
   .then(() => {
     store.commit('setStatus','done')
