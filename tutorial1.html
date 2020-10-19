@@ -24,7 +24,7 @@
     </div>
     <div>
       <p>Geometries: {{ count }}</p> 
-      <p>Status: {{ status }}</p> 
+      <p>Status: <span style="color:blue">{{ status }}</span></p>
     </div>
     <div>
       <label for="selector">Select a JSCAD design:</label>
@@ -46,13 +46,14 @@
  * NOTE: This is a LARGE design so processing may stop. Please wait for the procesing to complete.
  *
  * Behind the scene, the selected file is passed to the store for compilation. See COMPILE below.
- * The VUE components includes a compiler plugin (See src/compilerPlugin).
+ * The VUE components include a compiler plugin (See src/compilerPlugin).
  * Once the compile is complete, the JSCAD solids are updated, and WA LA!
  *
  * This works but there are some issues.
  * - This tutorial only allows the selection of a single file, no projects
- * - This tutorial does not support JSCAD design parameters. Not very useful.
  * - This tutorial REQUIRES DESIGNS TO BE NAMED 'index.js'. UG
+ * - This tutorial does not support JSCAD design parameters. Not very useful.
+ * - The viewer STOPS while the compliation completes.
  */
 
 // global registration of viewer component
