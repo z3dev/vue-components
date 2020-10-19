@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+  <title>JSCAD Design - Tutorial 2</title>
+  <script src="https://unpkg.com/vue"></script>
+  <script src="https://unpkg.com/vuex"></script>
+  <style>
+    .viewer{
+      width: 8cm;
+      height: 8cm;
+      margin: 0;
+      outline: 1px solid black;
+      background-color: transparent;
+    }
+  </style>
+</head>
+<body>
+  <script src="./dist/jscad-vue-components.js" ID="LIBRARY"></script>
+
+  <div id="app">
+    <div>
+      <jscad-viewer></jscad-viewer>
+    </div>
+    <div>
+      <p>Geometries: {{ count }}</p> 
+      <p>Status: <span style="color:blue">{{ status }}</span></p> 
+    </div>
+    <div>
+      <label for="selector">Select a JSCAD design:</label>
+      <input type="file" id="selector" @change="setFiles($event.target)" multiple webkitdirectory mozdirectory msdirectory odirectory directory></input>
+    </div>
+  </div>
+
+<script>
+/**
+ * This is Part 2 of working with JSCAD designs.
+ * This is another simple application, which allows the selection of a JSCAD project (directory).
+ *
+ * Notice that there is now only one script loaded, the Vue components library. See script LIBRARY above.
+ *
+ * The directory is selected via a standard HTML input control. NOTICE the long list of special attributes; mulltiple, etc.
+ * Any change / new selection produces a list of files (1 or more), and triggers the application function called setFiles().
+ *
+ * Try selecting this directory; examples/
+ * NOTE: This is a LARGE design so processing may stop. Please wait for the procesing to complete.
+ *
+ * Behind the scene, the selected directory (list of files) is passed to the store for compilation. See COMPILE below.
+ * The VUE components include a compiler plugin (See src/compilerPlugin).
+ * Once the compile is complete, the JSCAD solids are updated, and WA LA!
+ *
+ * This works but there are some issues.
+ * - This tutorial does not support JSCAD design parameters. Not very useful.
+ * - The viewer STOPS while the compliation completes.
+ */
+
+// global registration of viewer component
+Vue.component(jscadVueComponents.viewerComponent.name, jscadVueComponents.viewerComponent.properties)
+
+// global store with minimum state for viewer component
+const store = new Vuex.Store({
+  state: {
+    count: 0,
+    solids: [],
+    status: ''
+  },
+  plugins: [jscadVueComponents.compilerPlugin],
+  getters: {
+    getSolids: (state) => {
+      return state.solids
+    }
+  },
+  mutations: {
+    // @param {State} state
+    // @param {Array} solids
+    setSolids (state, solids) {
+      solids.forEach((solid, i) => {
+        Vue.set(state.solids, i, solid)
+      })
+      // trigger callback to viewer component
+      state.count = solids.length
+    },
+    setStatus (state, status) {
+      state.status = status
+    },
+    compile (state, fileList) {
+      // console.log('compile',fileList.length)
+      // NOTE: compile is perfomed by the PLUGIN
+    }
+  }
+})
+
+// initiate the Vue based application, which includes the jscad-viewer
+let app = new Vue({
+  el: '#app',
+  store,
+  computed: {
+    count () {
+      return store.state.count
+    },
+    status () {
+      return store.state.status
+    }
+  },
+  methods: {
+    setFiles (target) {
+      // validations
+      const files = target.files
+      if (files.length === 1) {
+        store.commit("compile", files) // COMPILE
+        return
+      }
+      store.commit("setStatus", 'please try again')
+    }
+  }
+})
+
+</script>
+
+</body>
+</html>
