@@ -35,16 +35,17 @@
 <script>
 /**
  * This is Part 1 of working with JSCAD designs.
- * This is another simple application, which allows the selection of a JSCAD design from a list of files.
+ * This is another simple application, which allows the selection of a single (file) JSCAD design.
  *
  * Notice that there is now only one script loaded, the Vue components library. See script LIBRARY above.
  *
  * The file is selected via a standard HTML input control.
- * Any change / new selection produces a list of files, and triggers the application function called setFiles().
+ * Any change / new selection produces a list of files (1), and triggers the application function called setFiles().
  *
  * Try selecting this file; examples/index.js
+ * NOTE: This is a LARGE design so processing may stop. Please wait for the procesing to complete.
  *
- * Behind the scene, the selected files is passed to the store for compilation. See COMPILE below.
+ * Behind the scene, the selected file is passed to the store for compilation. See COMPILE below.
  * The VUE components includes a compiler plugin (See src/compilerPlugin).
  * Once the compile is complete, the JSCAD solids are updated, and WA LA!
  *

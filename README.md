@@ -27,7 +27,7 @@ npm run build
 ### Tutorials
 - Hello - View some JSCAD solids
 - Tutorial 0 - Load and view a JSCAD design (kind of) from a file
-- Tutorial 1 - Choose a JSCAD design from a single file, then load and view
+- Tutorial 1 - Choose a JSCAD design from a single file, then compile and view
 
 ## License
 
