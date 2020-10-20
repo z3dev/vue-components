@@ -29,6 +29,7 @@ npm run build
 - Tutorial 0 - Load and view a JSCAD design (kind of) from a file
 - Tutorial 1 - Choose a JSCAD design from a single file, then compile and view
 - Tutorial 2 - Choose a JSCAD project from a directory, then compile and view
+- Tutorial 3 - Drag and Drop any JSCAD design (file or directory), then compile and view
 
 ## License
 
