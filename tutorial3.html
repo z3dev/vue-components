@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+  <title>JSCAD Design - Tutorial 3</title>
+  <script src="https://unpkg.com/vue"></script>
+  <script src="https://unpkg.com/vuex"></script>
+  <style>
+    .viewer{
+      width: 8cm;
+      height: 8cm;
+      margin: 0;
+      outline: 1px solid black;
+      background-color: transparent;
+    }
+  </style>
+</head>
+<body>
+  <script src="./dist/jscad-vue-components.js" ID="LIBRARY"></script>
+
+  <div id="app" v-cloak @drop.prevent="addContent" @dragover.prevent>
+    <div>
+      <jscad-viewer></jscad-viewer>
+    </div>
+    <div>
+      <p>Geometries: {{ count }}</p> 
+      <p>Status: <span style="color:blue">{{ status }}</span></p> 
+    </div>
+    <div>
+      <h3>DRAG AND DROP ANY JSCAD DESIGN TO THIS PAGE</h3> 
+      <ul>
+        <li v-for="entry in entries">
+          {{ entry.fullPath }} <button @click="removeEntry(entry)" title="Remove">X</button>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+<script>
+/**
+ * This is Part 3 of working with JSCAD designs.
+ * This is another simple application, which allows the drag-n-drop of a JSCAD design (file) or project (directory).
+ *
+ * Just drag and drop any JSCAD design (file or directory) to the window.
+ * Any new content produces a data transfer event, and triggers the application function called addContent().
+ *
+ * Try drag-n-drop of this directory; examples/
+ * NOTE: This is a LARGE design so processing may stop. Please wait for the procesing to complete.
+ *
+ * Behind the scene, the data transfer has a list of items (files), 
+ * which is converted, and passed to the store for compilation. See COMPILE below.
+ * The VUE components include a compiler plugin (See src/compilerPlugin).
+ * Once the compile is complete, the JSCAD solids are updated, and WA LA!
+ *
+ * There's also a cute little X (remove) button. Removing a file also triggers another compilation.
+ *
+ * This works but there are some issues.
+ * - This tutorial does not support JSCAD design parameters. Not very useful.
+ * - The viewer STOPS while the compliation completes.
+ *
+ * Did you find the hidden functionality? Try drag and drop of any support external file format, like STL.
+ */
+
+// global registration of viewer component
+Vue.component(jscadVueComponents.viewerComponent.name, jscadVueComponents.viewerComponent.properties)
+
+// global store with minimum state for viewer component
+const store = new Vuex.Store({
+  state: {
+    count: 0,
+    solids: [],
+    status: ''
+  },
+  plugins: [jscadVueComponents.compilerPlugin],
+  getters: {
+    getSolids: (state) => {
+      return state.solids
+    }
+  },
+  mutations: {
+    // @param {State} state
+    // @param {Array} solids
+    setSolids (state, solids) {
+      solids.forEach((solid, i) => {
+        Vue.set(state.solids, i, solid)
+      })
+      // trigger callback to viewer component
+      state.count = solids.length
+    },
+    setStatus (state, status) {
+      state.status = status
+    },
+    compile (state, fileList) {
+      // console.log('compile',fileList.length)
+      // NOTE: compile is perfomed by the PLUGIN
+    }
+  }
+})
+
+// initiate the Vue based application, which includes the jscad-viewer
+let app = new Vue({
+  el: '#app',
+  store,
+  data: {
+    entries: []
+  },
+  computed: {
+    count () {
+      return store.state.count
+    },
+    status () {
+      return store.state.status
+    }
+  },
+  methods: {
+    addContent(event) {
+      let items = event.dataTransfer.items
+      if (items && items.length > 0) {
+        this.entries = this.entries.filter((entry) => false) // clear the old entries
+        for (let i = 0; i < items.length; i++) {
+          let entry = items[i]
+          entry = entry.webkitGetAsEntry ? entry.webkitGetAsEntry() : entry
+          this.entries.push(entry)
+        }
+        store.commit("compile", this.entries) // COMPILE
+        return
+      }
+      store.commit("setStatus", 'please try again')
+    },
+    removeEntry(entryToRemove) {
+      this.entries = this.entries.filter((entry) => {
+        return entry != entryToRemove;
+      });
+      store.commit("compile", this.entries) // COMPILE
+    }
+  }
+})
+
+</script>
+
+</body>
+</html>
