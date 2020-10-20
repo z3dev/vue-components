@@ -9,7 +9,7 @@ const compilerPlugin = (store) => {
       // convert FileList to array of File
       const files = []
       for (let i = 0; i < fileList.length; i++) {
-        files.push(fileList.item(i))
+        files.push(fileList.item ? fileList.item(i) : fileList[i])
       }
 
       store.commit('setStatus',`processing (${files.length})...`)
