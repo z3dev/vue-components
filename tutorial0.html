@@ -16,7 +16,7 @@
   </style>
 </head>
 <body>
-  <script src="./dist/viewerComponent.js"></script>
+  <script src="./dist/jscad-vue-components.js" ID="LIBRARY"></script>
   <script src="./jscad-modeling.min.js" ID="JSCAD LIBRARY"></script>
   <script src="./tutorial0.js" ID="DESIGN"></script>
 
@@ -50,7 +50,7 @@
  */
 
 // global registration of viewer component
-Vue.component(viewerComponent.name, viewerComponent.properties)
+Vue.component(jscadVueComponents.viewerComponent.name, jscadVueComponents.viewerComponent.properties)
 
 // global store with minimum state for viewer component
 const store = new Vuex.Store({
