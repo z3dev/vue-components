@@ -72,7 +72,7 @@ const compileFromSource = (store, fileEntry) => {
     const data = { filesAndFolders: [ fileEntry ], serialize: false }
     const objects = evaluation.rebuildGeometry(data, handleParamsOrSolids)
   } catch (error) {
-    store.commit('setStatus',`error (${error.asString()})`)
+    store.commit('setStatus',`error (${error})`)
   }
 }
 
