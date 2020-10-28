@@ -32,6 +32,7 @@ const setupRenderer = (containerElement, data) => {
 
   // prepare the camera
   data.state.camera = Object.assign({}, perspectiveCamera.defaults)
+  data.state.camera.position = [150, -180, 233]
   perspectiveCamera.setProjection(data.state.camera, data.state.camera, { width, height })
   perspectiveCamera.update(data.state.camera, data.state.camera)
 
