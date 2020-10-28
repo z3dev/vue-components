@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+  <title>JSCAD Design - Tutorial 5</title>
+  <script src="https://unpkg.com/vue"></script>
+  <script src="https://unpkg.com/vuex"></script>
+  <style>
+    .viewer{
+      width: 8cm;
+      height: 8cm;
+      margin: 0;
+      outline: 1px solid black;
+      background-color: transparent;
+    }
+  </style>
+</head>
+<body>
+  <script src="./dist/jscad-vue-components.js" ID="LIBRARY"></script>
+
+  <div id="app">
+    <div>
+      <jscad-viewer></jscad-viewer>
+    </div>
+    <div>
+      <p>Geometries: {{ count }}</p> 
+      <p>Status: <span style="color:blue">{{ status }}</span></p> 
+    </div>
+    <div>
+      <h3>ENTER SOME TEXT FOR A JSCAD DESIGN</h3> 
+        <textarea autofocus cols=80 rows=12 maxlength=1000 wrap="hard" name="textarea" v-model="source" ID="TEXT INPUT">
+        </textarea>
+        <input type="submit" value="Compile" v-on:click="updateDesign">
+    </div>
+  </div>
+
+<script>
+/**
+ * This is Part 5 of working with JSCAD designs.
+ * This is another simple application, which allows the input of a JSCAD design (text). See TEXT INPUT above.
+ *
+ * Just make some changes to the JSCAD design, and push the 'Compile' button.
+ * VUE keeps track of the changes, updating the 'source' data attribute.
+ * When the 'Compile' button is pushed, an event is sent to updateDesign().
+ *
+ * Behind the scene, the 'source' is repackaged into a 'fake' FileEntry. See FILE ENTRY below.
+ * The contents are then, and passed to the store for compilation. See COMPILE below.
+ * Once the compile is complete, the JSCAD solids are updated, and WA LA!
+ *
+ * This works but there are some issues.
+ * - This tutorial does not support JSCAD design parameters. Not very useful.
+ * - The viewer STOPS while the compliation completes.
+ */
+
+// global registration of viewer component
+Vue.component(jscadVueComponents.viewerComponent.name, jscadVueComponents.viewerComponent.properties)
+
+// global store with minimum state for viewer component
+const store = new Vuex.Store({
+  state: {
+    count: 0,
+    solids: [],
+    status: ''
+  },
+  plugins: [jscadVueComponents.compilerPlugin],
+  getters: {
+    getSolids: (state) => {
+      return state.solids
+    }
+  },
+  mutations: {
+    // @param {State} state
+    // @param {Array} solids
+    setSolids (state, solids) {
+      solids.forEach((solid, i) => {
+        Vue.set(state.solids, i, solid)
+      })
+      // trigger callback to viewer component
+      state.count = solids.length
+    },
+    setStatus (state, status) {
+      state.status = status
+    },
+    compile (state, fileList) {
+      // NOTE: compile is perfomed by the PLUGIN
+    }
+  }
+})
+
+// initiate the Vue based application, which includes the jscad-viewer
+let app = new Vue({
+  el: '#app',
+  store,
+  data: {
+    source: `
+const { circle } = require('@jscad/modeling').primitives
+
+const main = () => {
+  const partA = circle()
+  return partA
+}
+
+module.exports = { main }
+    `,
+    entries: []
+  },
+  computed: {
+    count () {
+      return store.state.count
+    },
+    status () {
+      return store.state.status
+    }
+  },
+  methods: {
+    updateDesign(event) {
+      // create a fake file entry for the compilation // FILE ENTRY
+      const fake = {
+        name: 'fake',
+        ext: 'js',
+        source: this.source,
+        fullPath: '/fake.js'
+      }
+      store.commit("compile", fake) // COMPILE
+    }
+  }
+})
+
+</script>
+
+</body>
+</html>
