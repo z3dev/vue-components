@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
-  <title>Simple Viewer for JSCAD Solids</title>
+  <title>JSCAD Solids</title>
   <script src="https://unpkg.com/vue"></script>
   <script src="https://unpkg.com/vuex"></script>
   <style>
@@ -16,7 +16,7 @@
   </style>
 </head>
 <body>
-  <script src="./dist/viewerComponent.js"></script>
+  <script src="./dist/jscad-vue-components.js"></script>
   <script src="./solids.js"></script>
 
   <div id="app">
@@ -27,7 +27,7 @@
 
 <script>
 // global registration of viewer component
-Vue.component(viewerComponent.name, viewerComponent.properties)
+Vue.component(jscadVueComponents.viewerComponent.name, jscadVueComponents.viewerComponent.properties)
 
 // global store with minimum state for viewer component
 const store = new Vuex.Store({

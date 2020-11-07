@@ -96,7 +96,7 @@ let app = new Vue({
 const { circle } = require('@jscad/modeling').primitives
 
 const main = () => {
-  const partA = circle()
+  const partA = circle({radius: 10})
   return partA
 }
 
