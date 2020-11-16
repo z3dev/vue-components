@@ -5,8 +5,9 @@ const orbitControls = controls.orbit
 
 let numberOfInstances = 0
 
-const renderRate = 10 // number of renders per second
-const zoomRate = 10 // number of zooms per second
+const rotateSpeed = 0.002
+const panSpeed = 0.75
+const zoomSpeed = 0.08
 
 /**
  * Set up the JSCAD renderer.
@@ -20,10 +21,16 @@ const setupRenderer = (containerElement, data) => {
 
   // each viewer has state
   data.state = {
+    // state to control rendering
     camera: {},
     controls: {},
+    rotateDelta: [0, 0],
+    panDelta: [0, 0],
+    zoomDelta: 0,
+    // state to track mouse
     mouse: {
       buttons: 0,
+      shiftKey: false,
       isOrbiting: false,
       lastClick: 0, // ms
       lastZoom: 0
@@ -79,20 +86,46 @@ const setupRenderer = (containerElement, data) => {
     ]
   }
 
-  // the heart of rendering, as themes, controls, etc change
-  data.prevTimestamp = 0
-  const updateAndRender = (timestamp) => {
-    const elaspe = timestamp - data.prevTimestamp
-    if (elaspe > (1000 / renderRate)) {
-      data.prevTimestamp = timestamp
-
-      const updates = orbitControls.update({ controls: data.state.controls, camera: data.state.camera })
-      data.state.controls = { ...data.state.controls, ...updates.controls }
-      data.state.camera.position = updates.camera.position
-      perspectiveCamera.update(data.state.camera)
-
-      renderer(data.state.content)
+  const doRotatePanZoom = (state) => {
+    let { rotateDelta, panDelta, zoomDelta, controls, camera } = state
+    if (rotateDelta[0] || rotateDelta[1]) {
+      const updated = orbitControls.rotate({ controls, camera, speed: rotateSpeed }, rotateDelta)
+      state.controls = { ...controls, ...updated.controls }
+      state.rotateDelta[0] = 0
+      state.rotateDelta[1] = 0
     }
+
+    if (panDelta[0] || panDelta[1]) {
+      const updated = orbitControls.pan({ controls, camera, speed: panSpeed }, panDelta)
+      state.camera.position = updated.camera.position
+      state.camera.target = updated.camera.target
+      state.panDelta[0] =  0
+      state.panDelta[1] =  0
+    }
+
+    if (zoomDelta) {
+      if (Number.isFinite(zoomDelta)) {
+        const updated = orbitControls.zoom({ controls, camera, speed: zoomSpeed }, zoomDelta)
+        state.controls = { ...controls, ...updated.controls }
+      } else {
+        const entities = state.content.entities
+        const updated = orbitControls.zoomToFit({ controls, camera, entities })
+        state.controls = { ...controls, ...updated.controls }
+      }
+      state.zoomDelta = 0
+    }
+  }
+
+  // the heart of rendering, as themes, controls, etc change
+  const updateAndRender = (timestamp) => {
+    doRotatePanZoom(data.state)
+
+    const updates = orbitControls.update({ controls: data.state.controls, camera: data.state.camera })
+    data.state.controls = { ...data.state.controls, ...updates.controls }
+    data.state.camera.position = updates.camera.position
+    perspectiveCamera.update(data.state.camera)
+
+    renderer(data.state.content)
     window.requestAnimationFrame(updateAndRender)
   }
   window.requestAnimationFrame(updateAndRender)
@@ -154,15 +187,12 @@ const viewerComponent = {
       }
     },
     methods: {
+      // mouse event handling
       onMouseDown: function (event) {
         const state = this._data.state
         state.mouse.buttons = event.buttons
+        state.mouse.shiftKey = event.shiftKey
         state.mouse.isOrbiting = true
-console.log('d',state.mouse.buttons)
-        // event.altKey
-        // event.ctrlKey
-        // event.metaKey
-        // event.shiftKey
       },
       onMouseUp: function (event) {
         // handle double clicks
@@ -172,41 +202,33 @@ console.log('d',state.mouse.buttons)
            const ms = now - state.mouse.lastClick
            if (ms < this.viewerOptions.doubleClickSpeed) {
              if (state.mouse.isOrbiting) {
-console.log(state)
-               const entities = state.content.entities
-               const updated = orbitControls.zoomToFit({ controls: state.controls, camera: state.camera, entities })
-               state.controls = { ...state.controls, ...updated.controls }
+               state.zoomDelta = Number.POSITIVE_INFINITY
              }
            }
         }
         state.mouse.lastClick = now
         // reset state
         state.mouse.buttons = 0
+        state.mouse.shiftKey = false
         state.mouse.isOrbiting = false
       },
       onMouseMove: function (event) {
         const state = this._data.state
         if (state.mouse.isOrbiting) {
-          const delta = [event.movementX, -event.movementY] // .map((d) => -d)
-          const state = this._data.state
-          const speed = this.viewerOptions.rotateSpeed
-          const updated = orbitControls.rotate({ controls: state.controls, camera: state.camera, speed }, delta)
-          state.controls = { ...state.controls, ...updated.controls }
+          if (state.mouse.shiftKey) {
+            state.panDelta[0] -= event.movementX
+            state.panDelta[1] += event.movementY
+          } else {
+            state.rotateDelta[0] += event.movementX
+            state.rotateDelta[1] -= event.movementY
+          }
         }
       },
       onScroll: function (event) {
         event.preventDefault()
 
-        const now = Date.now()
         const state = this._data.state
-        const ms = now - state.mouse.lastZoom
-        if (ms > (1000 / zoomRate)) {
-          const delta = event.deltaY
-          const speed = this.viewerOptions.zoomSpeed
-          const updated = orbitControls.zoom({ controls: state.controls, camera: state.camera, speed }, delta)
-          state.controls = { ...state.controls, ...updated.controls }
-          state.mouse.lastZoom = now
-        }
+        state.zoomDelta = event.deltaY
       }
     },
     // VUE lifecycle additions
