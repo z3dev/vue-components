@@ -16,7 +16,7 @@ const fetchPlugin = (store) => {
       }
       const onsucess = (fileEntry) => {
         store.commit('setStatus',`fetched...`)
-        store.commit('compile',fileEntry)
+        store.commit('compile',{ fileList: fileEntry })
       }
 
       // validate the URL
