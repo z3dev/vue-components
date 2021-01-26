@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+  <title>JSCAD Design - Tutorial 6</title>
+  <script src="https://unpkg.com/vue"></script>
+  <script src="https://unpkg.com/vuex"></script>
+  <style>
+    .viewer{
+      width: 8cm;
+      height: 8cm;
+      margin: 0;
+      outline: 1px solid black;
+      background-color: transparent;
+    }
+  </style>
+</head>
+<body>
+  <script src="./dist/jscad-vue-components.js" ID="LIBRARY"></script>
+
+  <div id="app">
+    <div>
+      <jscad-viewer></jscad-viewer>
+    </div>
+    <div>
+      <p>Geometries: {{ count }}</p> 
+      <p>Status: <span style="color:blue">{{ status }}</span></p> 
+    </div>
+    <div>
+      <h3>ENTER SOME TEXT FOR A JSCAD DESIGN</h3> 
+        <textarea autofocus cols=100 rows=12 maxlength=1000 wrap="hard" name="textarea" v-model="source" ID="TEXT INPUT">
+        </textarea>
+        <input type="submit" value="Compile" v-on:click="updateDesign">
+      <h3>CHANGE THE PARAMETER</h3> 
+        <input type="number" v-model="radius" ID="PARAMETER">
+    </div>
+  </div>
+
+<script>
+/**
+ * This is Part 6 of working with JSCAD designs.
+ * This is another simple application, which allows the input of a parameter to a JSCAD design. See PARAMETER above.
+ *
+ * Just change the parameter, and push the 'Compile' button.
+ * VUE keeps track of the changes to the parameter, updating the 'radius' data attribute.
+ * When the 'Compile' button is pushed, an event is sent to updateDesign().
+ *
+ * Behind the scene, the 'source' is repackaged into a 'fake' FileEntry. See FILE ENTRY below.
+ * In addition, the 'radius' is converted on NUMBER and placed into a list of parameter values. See PARAMETER VALUES below.
+ * The contents and the parameter values are passed to the store for compilation. See COMPILE below.
+ * Once the compile is complete, the JSCAD solids are updated, and WA LA!
+ *
+ * Things to notice about the design:
+ * - the main() function now takes an argument, an anonymous object with a 'radius' attribute
+ *
+ * This works but there are some issues.
+ * - This design does not define the parameters, therefore no checks are performed. Try changing the 'radius' to a negative value.
+ * - The viewer STOPS while the compliation completes.
+ */
+
+// global registration of viewer component
+Vue.component(jscadVueComponents.viewerComponent.name, jscadVueComponents.viewerComponent.properties)
+
+// global store with minimum state for viewer component
+const store = new Vuex.Store({
+  state: {
+    count: 0,
+    solids: [],
+    status: ''
+  },
+  plugins: [jscadVueComponents.compilerPlugin],
+  getters: {
+    getSolids: (state) => {
+      return state.solids
+    }
+  },
+  mutations: {
+    // @param {State} state
+    // @param {Array} solids
+    setSolids (state, solids) {
+      solids.forEach((solid, i) => {
+        Vue.set(state.solids, i, solid)
+      })
+      // trigger callback to viewer component
+      state.count = solids.length
+    },
+    setStatus (state, status) {
+      state.status = status
+    },
+    compile (state, fileList, parameters) {
+      // NOTE: compile is perfomed by the PLUGIN
+    }
+  }
+})
+
+// initiate the Vue based application, which includes the jscad-viewer
+let app = new Vue({
+  el: '#app',
+  store,
+  data: {
+    source: `
+const { circle } = require('@jscad/modeling').primitives
+
+const main = ({ radius }) => {
+  const partA = circle({radius})
+  return partA
+}
+
+module.exports = { main }
+    `,
+    radius: 10,
+    entries: []
+  },
+  computed: {
+    count () {
+      return store.state.count
+    },
+    status () {
+      return store.state.status
+    }
+  },
+  methods: {
+    updateDesign(event) {
+      // create a fake file entry for the compilation
+      const fileEntry = { // FILE ENTRY
+        name: 'fake',
+        ext: 'js',
+        source: this.source,
+        fullPath: '/fake.js'
+      }
+      const parameterValues = { radius: Number.parseFloat(this.radius) } // PARAMETER VALUES
+      store.commit("compile", { fileList: fileEntry, parameterValues } ) // COMPILE
+    }
+  }
+})
+
+</script>
+
+</body>
+</html>
