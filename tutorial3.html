@@ -90,8 +90,7 @@ const store = new Vuex.Store({
     setStatus (state, status) {
       state.status = status
     },
-    compile (state, fileList) {
-      // console.log('compile',fileList.length)
+    compile (state, design) {
       // NOTE: compile is perfomed by the PLUGIN
     }
   }
@@ -122,7 +121,7 @@ let app = new Vue({
           entry = entry.webkitGetAsEntry ? entry.webkitGetAsEntry() : entry
           this.entries.push(entry)
         }
-        store.commit("compile", this.entries) // COMPILE
+        store.commit("compile", { fileList: this.entries }) // COMPILE
         return
       }
       store.commit("setStatus", 'please try again')

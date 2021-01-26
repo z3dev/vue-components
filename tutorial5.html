@@ -81,7 +81,7 @@ const store = new Vuex.Store({
     setStatus (state, status) {
       state.status = status
     },
-    compile (state, fileList) {
+    compile (state, design) {
       // NOTE: compile is perfomed by the PLUGIN
     }
   }
@@ -114,14 +114,14 @@ module.exports = { main }
   },
   methods: {
     updateDesign(event) {
-      // create a fake file entry for the compilation // FILE ENTRY
-      const fake = {
+      // create a fake file entry for the compilation
+      const fileEntry = {
         name: 'fake',
         ext: 'js',
         source: this.source,
         fullPath: '/fake.js'
       }
-      store.commit("compile", fake) // COMPILE
+      store.commit("compile", { fileList: fileEntry }) // COMPILE
     }
   }
 })
