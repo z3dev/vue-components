@@ -4,7 +4,6 @@ VUE Components for rendering and compiling JSCAD designs
 
 ## ALPHA ALPHA ALPHA
 ## ALPHA ALPHA ALPHA
-## ALPHA ALPHA ALPHA
 
 ## Table of Contents
 - [Usage](#usage)
@@ -32,8 +31,9 @@ npm run build
 - Tutorial 3 - Drag and Drop any JSCAD design (file or directory), then compile and view
 - Tutorial 4 - Fetch a JSCAD design (file) from a remote site (URL), then compile and view
 - Tutorial 5 - Edit a JSCAD design on line, then compile and view
+- Tutorial 6 - Change a parameter for a JSCAD design, then compile and view
 
 ## License
 
-[The MIT License (MIT)](https://github.com/jscad/OpenJSCAD.org/blob/master/LICENSE)
+[The MIT License (MIT)](./LICENSE)
 (unless specified otherwise)
