@@ -83,8 +83,7 @@ const store = new Vuex.Store({
     setStatus (state, status) {
       state.status = status
     },
-    compile (state, fileList) {
-      // console.log('compile',fileList.length)
+    compile (state, design) {
       // NOTE: compile is perfomed by the PLUGIN
     }
   }
@@ -107,7 +106,7 @@ let app = new Vue({
       // validations
       const files = target.files
       if (files.length === 1) {
-        store.commit("compile", files) // COMPILE
+        store.commit("compile", { fileList: files }) // COMPILE
         return
       }
       store.commit("setStatus", 'please try again')

@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
-  <title>JSCAD Design - Tutorial 5</title>
+  <title>JSCAD Design - Tutorial 6</title>
   <script src="https://unpkg.com/vue"></script>
   <script src="https://unpkg.com/vuex"></script>
   <style>
@@ -28,27 +28,33 @@
     </div>
     <div>
       <h3>ENTER SOME TEXT FOR A JSCAD DESIGN</h3> 
-        <textarea autofocus cols=80 rows=12 maxlength=1000 wrap="hard" name="textarea" v-model="source" ID="TEXT INPUT">
+        <textarea autofocus cols=100 rows=12 maxlength=1000 wrap="hard" name="textarea" v-model="source" ID="TEXT INPUT">
         </textarea>
         <input type="submit" value="Compile" v-on:click="updateDesign">
+      <h3>CHANGE THE PARAMETER</h3> 
+        <input type="number" v-model="radius" ID="PARAMETER">
     </div>
   </div>
 
 <script>
 /**
- * This is Part 5 of working with JSCAD designs.
- * This is another simple application, which allows the input of a JSCAD design (text). See TEXT INPUT above.
+ * This is Part 6 of working with JSCAD designs.
+ * This is another simple application, which allows the input of a parameter to a JSCAD design. See PARAMETER above.
  *
- * Just make some changes to the JSCAD design, and push the 'Compile' button.
- * VUE keeps track of the changes, updating the 'source' data attribute.
+ * Just change the parameter, and push the 'Compile' button.
+ * VUE keeps track of the changes to the parameter, updating the 'radius' data attribute.
  * When the 'Compile' button is pushed, an event is sent to updateDesign().
  *
  * Behind the scene, the 'source' is repackaged into a 'fake' FileEntry. See FILE ENTRY below.
- * The contents are then, and passed to the store for compilation. See COMPILE below.
+ * In addition, the 'radius' is converted on NUMBER and placed into a list of parameter values. See PARAMETER VALUES below.
+ * The contents and the parameter values are passed to the store for compilation. See COMPILE below.
  * Once the compile is complete, the JSCAD solids are updated, and WA LA!
  *
+ * Things to notice about the design:
+ * - the main() function now takes an argument, an anonymous object with a 'radius' attribute
+ *
  * This works but there are some issues.
- * - This tutorial does not support JSCAD design parameters. Not very useful.
+ * - This design does not define the parameters, therefore no checks are performed. Try changing the 'radius' to a negative value.
  * - The viewer STOPS while the compliation completes.
  */
 
@@ -81,7 +87,7 @@ const store = new Vuex.Store({
     setStatus (state, status) {
       state.status = status
     },
-    compile (state, design) {
+    compile (state, fileList, parameters) {
       // NOTE: compile is perfomed by the PLUGIN
     }
   }
@@ -95,13 +101,15 @@ let app = new Vue({
     source: `
 const { circle } = require('@jscad/modeling').primitives
 
-const main = () => {
-  const partA = circle({radius: 10})
+const main = ({ radius }) => {
+  const partA = circle({radius})
   return partA
 }
 
 module.exports = { main }
     `,
+    // PARAMETER
+    radius: 10,
     entries: []
   },
   computed: {
@@ -115,13 +123,14 @@ module.exports = { main }
   methods: {
     updateDesign(event) {
       // create a fake file entry for the compilation
-      const fileEntry = {
+      const fileEntry = { // FILE ENTRY
         name: 'fake',
         ext: 'js',
         source: this.source,
         fullPath: '/fake.js'
       }
-      store.commit("compile", { fileList: fileEntry }) // COMPILE
+      const parameterValues = { radius: Number.parseFloat(this.radius) } // PARAMETER VALUES
+      store.commit("compile", { fileList: fileEntry, parameterValues } ) // COMPILE
     }
   }
 })
