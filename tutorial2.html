@@ -103,13 +103,8 @@ let app = new Vue({
   },
   methods: {
     setFiles (target) {
-      // validations
       const files = target.files
-      if (files.length === 1) {
-        store.commit("compile", { fileList: files }) // COMPILE
-        return
-      }
-      store.commit("setStatus", 'please try again')
+      store.commit("compile", { fileList: files }) // COMPILE
     }
   }
 })

@@ -35,7 +35,7 @@ const compilerPlugin = (store) => {
 }
 
 const compileFromFiles = (store, files, parameterValues) => {
-  //console.log('compileFromFile',files)
+  // console.log('compileFromFiles',files)
 
   const handleParamsOrSolids = (crap, paramsOrSolids) => {
     if (paramsOrSolids.type === 'solids') {
@@ -46,16 +46,21 @@ const compileFromFiles = (store, files, parameterValues) => {
 
   web.walkFileTree(files)
   .then((filesAndFolders) => {
-    store.commit('setStatus','compiling...')
-
-    const data = { filesAndFolders, serialize: false }
-    const objects = evaluation.rebuildGeometry(data, handleParamsOrSolids)
+    if (filesAndFolders.length === 1 && filesAndFolders[0].children && filesAndFolders[0].children.length === 1) {
+      // single file entry
+      const fileEntry = filesAndFolders[0].children[0]
+      compileFromSource(store, fileEntry, parameterValues)
+    } else {
+      store.commit('setStatus','compiling...')
+      const data = { filesAndFolders, serialize: false }
+      const objects = evaluation.rebuildGeometry(data, handleParamsOrSolids)
+    }
   })
   .then(() => {
     store.commit('setStatus','done')
   })
   .catch((error) => {
-    store.commit('setStatus',`error (${error.asString()})`)
+    store.commit('setStatus',`${error}`)
   })
 }
 
@@ -73,7 +78,7 @@ const compileFromSource = (store, fileEntry, parameterValues) => {
     const data = { filesAndFolders: [ fileEntry ], parameterValues, serialize: false }
     const objects = evaluation.rebuildGeometry(data, handleParamsOrSolids)
   } catch (error) {
-    store.commit('setStatus',`error (${error})`)
+    store.commit('setStatus',`${error}`)
   }
 }
 

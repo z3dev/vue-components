@@ -77,6 +77,7 @@ const setupRenderer = (containerElement, data) => {
     drawCommands: {
       drawGrid: drawCommands.drawGrid,
       drawAxis: drawCommands.drawAxis,
+      drawLines: drawCommands.drawLines,
       drawMesh: drawCommands.drawMesh
     },
     entities: [
